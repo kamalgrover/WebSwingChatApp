@@ -30,10 +30,16 @@ unzip -j webswing.zip \"*webswing-api*.jar\" -d libs/
 ```
 
 ### 2. Build the Application
-Generate the shadow JAR containing all dependencies:
+Use the committed Gradle Wrapper
 ```bash
-./gradlew shadowJar
+./gradlew --no-daemon shadowJar
 ```
+
+Wrapper files that should stay in git:
+- `gradlew`
+- `gradlew.bat`
+- `gradle/wrapper/gradle-wrapper.jar`
+- `gradle/wrapper/gradle-wrapper.properties`
 
 ### 3. Launch with Docker
 Build the headless environment and start the server:
