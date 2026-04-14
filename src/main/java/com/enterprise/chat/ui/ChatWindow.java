@@ -78,7 +78,7 @@ public class ChatWindow extends JFrame {
     }
 
     private void configureFrame() {
-        setTitle("Enterprise Chat — Webswing");
+        setTitle("Enterprise Chat - Webswing");
         setSize(500, 600);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }

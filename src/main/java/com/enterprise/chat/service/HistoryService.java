@@ -34,17 +34,17 @@ public class HistoryService {
     }
 
     public void loadChatHistory() {
-        log.info("Loading chat history…");
+        log.info("Loading chat history...");
 
         new SwingWorker<Void, String>() {
             @Override
             protected Void doInBackground() throws Exception {
-                // Simulate slow I/O — runs on a background worker thread
-                publish("— Loading History —");
+                // Simulate slow I/O -- runs on a background worker thread
+                publish("--- Loading History ---");
                 Thread.sleep(500);
                 publish("Alice: Architecture looks good.");
                 Thread.sleep(500);
-                publish("— History Loaded —");
+                publish("--- History Loaded ---");
                 return null;
             }
 
