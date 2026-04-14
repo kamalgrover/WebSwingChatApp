@@ -20,9 +20,19 @@ repositories {
 dependencies {
     implementation 'com.formdev:flatlaf:3.4'
     implementation 'com.google.guava:guava:33.0.0-jre'
-    implementation 'org.springframework:spring-context:6.1.4'
-    
+    implementation 'org.springframework:spring-context:6.2.7'
+
+    // Logging (replaces System.out.println)
+    implementation 'org.slf4j:slf4j-api:2.0.12'
+    runtimeOnly    'ch.qos.logback:logback-classic:1.5.6'
+
     compileOnly fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Testing
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testImplementation 'org.mockito:mockito-core:5.11.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.11.0'
+    testImplementation 'org.assertj:assertj-core:3.25.3'
 }
 
 application {
@@ -34,4 +44,8 @@ shadowJar {
     archiveClassifier.set('')
     archiveVersion.set('')
     mergeServiceFiles() 
+}
+
+test {
+    useJUnitPlatform()
 }
