@@ -1,0 +1,5 @@
+services:
+  webswing_chat:
+    build:
+      context: .
+      dockerfile: Dockerfile.multistage

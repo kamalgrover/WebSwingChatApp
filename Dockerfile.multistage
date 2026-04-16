@@ -1,0 +1,56 @@
+# syntax=docker/dockerfile:1
+
+# Build stage: compile fat jar inside container so host Java/Gradle is not required.
+FROM gradle:8.10.2-jdk17 AS builder
+WORKDIR /workspace
+
+COPY gradlew gradlew
+COPY gradlew.bat gradlew.bat
+COPY gradle gradle
+COPY settings.gradle settings.gradle
+COPY build.gradle build.gradle
+COPY src src
+COPY webswing.zip webswing.zip
+
+# Extract Webswing API jars needed at compile time.
+RUN mkdir -p libs && unzip -j webswing.zip "*webswing-api*.jar" -d libs/
+
+RUN chmod +x gradlew && ./gradlew --no-daemon shadowJar
+
+# Runtime stage
+FROM eclipse-temurin:17-jdk-jammy
+
+RUN apt-get update && apt-get install --no-install-recommends -y \
+    unzip \
+    xvfb \
+    libxext6 \
+    libxi6 \
+    libxtst6 \
+    libxrender1 \
+    fontconfig \
+    fonts-dejavu \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV WEBSWING_HOME=/opt/webswing \
+    DISPLAY=:99
+
+WORKDIR /opt/webswing
+
+COPY webswing.zip /tmp/webswing.zip
+RUN unzip /tmp/webswing.zip -d /tmp/webswing_extracted && \
+    mv /tmp/webswing_extracted/*/* /opt/webswing/ && \
+    rm -rf /tmp/webswing.zip /tmp/webswing_extracted && \
+    chmod +x /opt/webswing/webswing.sh
+
+COPY --from=builder /workspace/build/libs/chat-app.jar /opt/webswing/apps/chat-app.jar
+COPY webswing.config /opt/webswing/webswing.config
+
+EXPOSE 8080
+
+RUN echo '#!/bin/sh' > start.sh && \
+    echo 'Xvfb :99 -screen 0 1024x768x16 &' >> start.sh && \
+    echo 'sleep 2' >> start.sh && \
+    echo './webswing.sh run' >> start.sh && \
+    chmod +x start.sh
+
+CMD ["./start.sh"]

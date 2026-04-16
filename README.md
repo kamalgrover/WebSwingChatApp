@@ -17,36 +17,43 @@ A high-performance Java Swing chat application deployed as a modern web service 
 
 ## Prerequisites
 - Docker and Docker Compose
-- Java 17 JDK
 - Webswing 26.1 Distribution (`webswing.zip` in project root)
 
 ## Setup & Installation
 
-### 1. Extract API Libraries
-To satisfy Gradle dependencies without an external Nexus repository (Air-gapped fix):
+### Option A: Hardened preflight flow (clear messages)
+This option validates required files and prints actionable error messages before Docker runs.
+
+macOS/Linux:
 ```bash
-mkdir libs
-unzip -j webswing.zip \"*webswing-api*.jar\" -d libs/
+./scripts/dev-up.sh
 ```
 
-### 2. Build the Application
-Use the committed Gradle Wrapper
-```bash
-./gradlew --no-daemon shadowJar
+Windows PowerShell:
+```powershell
+.\scripts\dev-up.ps1
 ```
+
+What it checks:
+- `webswing.zip` exists in project root
+- then runs `docker-compose up --build`
+
+### Option B: Direct compose flow (default, minimal setup)
+`docker-compose.yml` now uses the multi-stage Dockerfile by default. The JAR is built inside Docker, so host Java/Gradle setup is not required.
+
+```bash
+docker-compose up --build
+```
+
+Required on all OSes:
+- Docker Desktop (or Docker Engine + Compose)
+- `webswing.zip` in project root
 
 Wrapper files that should stay in git:
 - `gradlew`
 - `gradlew.bat`
 - `gradle/wrapper/gradle-wrapper.jar`
 - `gradle/wrapper/gradle-wrapper.properties`
-
-### 3. Launch with Docker
-Build the headless environment and start the server:
-```bash
-docker-compose build --no-cache
-docker-compose up
-```
 
 ### Usage
 Once the container is running, access the application at:
@@ -61,6 +68,8 @@ Once the container is running, access the application at:
 - Blank Screen: Check `webswing.config` to ensure the `mainClass` is correctly defined within the `launcherConfig` block (Webswing 26.1+ schema requirement).
 - Connection Reset: Verify the Docker port mapping (`8080:8080`) and ensure `webswing.server.host` is set to `0.0.0.0` in `webswing.properties`.
 - Logs: Real-time logs are mapped to the local `/logs` directory on your host machine for easy debugging.
+- Build fails with `COPY webswing.zip ... not found`: place `webswing.zip` in the project root.
+- Build fails while extracting Webswing API jars: verify your `webswing.zip` is a valid Webswing 26.1 distribution archive.
 
 ### License
 Educational/Personal Use - Webswing Community Edition.

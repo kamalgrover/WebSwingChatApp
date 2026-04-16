@@ -1,6 +1,8 @@
 services:
   webswing_chat:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.multistage
     container_name: chat_app_dev
     ports:
       - "8080:8080" 
